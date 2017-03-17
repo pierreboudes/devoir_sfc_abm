@@ -1,0 +1,1003 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="fr" xml:lang="fr">
+<head>
+<title>Simulation d'une économie monétaire (programmation impérative, sujet 3)</title>
+<!-- 2014-03-06 Thu 23:25 -->
+<meta  http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta  name="generator" content="Org-mode" />
+<meta  name="author" content="Pierre Boudes" />
+<style type="text/css">
+ <!--/*--><![CDATA[/*><!--*/
+  .title  { text-align: center; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { color: green; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #ccc;
+    box-shadow: 3px 3px 3px #eee;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: visible;
+    padding-top: 1.2em;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    background-color: white;
+    top: -10px;
+    right: 10px;
+    padding: 3px;
+    border: 1px solid black;
+  }
+  pre.src:hover:before { display: inline;}
+  pre.src-sh:before    { content: 'sh'; }
+  pre.src-bash:before  { content: 'sh'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-R:before     { content: 'R'; }
+  pre.src-perl:before  { content: 'Perl'; }
+  pre.src-java:before  { content: 'Java'; }
+  pre.src-sql:before   { content: 'SQL'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.right  { text-align: center;  }
+  th.left   { text-align: center;   }
+  th.center { text-align: center; }
+  td.right  { text-align: right;  }
+  td.left   { text-align: left;   }
+  td.center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara:nth-child(2) { display: inline; }
+  .footpara { display: block; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  /*]]>*/-->
+</style>
+<link rel="stylesheet" type="text/css" href="http://sfc-abm.org/bootstrap/css/bootstrap.min.css" />
+<style type="text/css">pre.src {color: #CCCCCC;background-color: #666666;}body {margin-left: 20px;margin-right: 20px;}</style>
+<script type="text/javascript">
+/*
+@licstart  The following is the entire license notice for the
+JavaScript code in this tag.
+
+Copyright (C) 2012-2013 Free Software Foundation, Inc.
+
+The JavaScript code in this tag is free software: you can
+redistribute it and/or modify it under the terms of the GNU
+General Public License (GNU GPL) as published by the Free Software
+Foundation, either version 3 of the License, or (at your option)
+any later version.  The code is distributed WITHOUT ANY WARRANTY;
+without even the implied warranty of MERCHANTABILITY or FITNESS
+FOR A PARTICULAR PURPOSE.  See the GNU GPL for more details.
+
+As additional permission under GNU GPL version 3 section 7, you
+may distribute non-source (e.g., minimized or compacted) forms of
+that code without the copy of the GNU GPL normally required by
+section 4, provided you include this license notice and a URL
+through which recipients can access the Corresponding Source.
+
+
+@licend  The above is the entire license notice
+for the JavaScript code in this tag.
+*/
+<!--/*--><![CDATA[/*><!--*/
+ function CodeHighlightOn(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(null != target) {
+     elem.cacheClassElem = elem.className;
+     elem.cacheClassTarget = target.className;
+     target.className = "code-highlighted";
+     elem.className   = "code-highlighted";
+   }
+ }
+ function CodeHighlightOff(elem, id)
+ {
+   var target = document.getElementById(id);
+   if(elem.cacheClassElem)
+     elem.className = elem.cacheClassElem;
+   if(elem.cacheClassTarget)
+     target.className = elem.cacheClassTarget;
+ }
+/*]]>*///-->
+</script>
+</head>
+<body>
+<div id="content">
+<h1 class="title">Simulation d'une économie monétaire (programmation impérative, sujet 3)</h1>
+<div id="table-of-contents">
+<h2>Table des matières</h2>
+<div id="text-table-of-contents">
+<ul>
+<li><a href="#sec-1">1. Sujet</a></li>
+<li><a href="#sec-2">2. Description plus détaillée de la simulation</a>
+<ul>
+<li><a href="#sec-2-1">2.1. Les agents</a></li>
+<li><a href="#sec-2-2">2.2. Les interactions</a></li>
+<li><a href="#sec-2-3">2.3. Les quantités, les paramètres</a>
+<ul>
+<li><a href="#sec-2-3-1">2.3.1. La monnaie</a></li>
+<li><a href="#sec-2-3-2">2.3.2. Le temps</a></li>
+<li><a href="#sec-2-3-3">2.3.3. Les biens, la production, les stocks</a></li>
+<li><a href="#sec-2-3-4">2.3.4. Travail, qualification, contrat de travail</a></li>
+<li><a href="#sec-2-3-5">2.3.5. Données des ménages</a></li>
+<li><a href="#sec-2-3-6">2.3.6. Données de production des entreprises</a></li>
+<li><a href="#sec-2-3-7">2.3.7. Données financières des entreprises</a></li>
+<li><a href="#sec-2-3-8">2.3.8. La banque</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-4">2.4. Les relations, les marchés</a>
+<ul>
+<li><a href="#sec-2-4-1">2.4.1. La relation de salariat</a></li>
+<li><a href="#sec-2-4-2">2.4.2. le marché du travail</a></li>
+<li><a href="#sec-2-4-3">2.4.3. Le marché des biens</a></li>
+</ul>
+</li>
+<li><a href="#sec-2-5">2.5. Les comportements</a></li>
+</ul>
+</li>
+<li><a href="#sec-3">3. Étapes de réalisation et rendu</a>
+<ul>
+<li><a href="#sec-3-1">3.1. Première étape : le marché du travail</a></li>
+<li><a href="#sec-3-2">3.2. Seconde étape : le marché des biens</a></li>
+<li><a href="#sec-3-3">3.3. Troisième étape : le marché du crédit</a></li>
+<li><a href="#sec-3-4">3.4. Quatrième étape : améliorer la simulation</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<p>
+&lt;!&#x2013; Bootstrap &#x2013;&gt;
+</p>
+<script src="d3/d3.min.js" charset="utf-8" type="text/javascript"></script>
+<script src="marchetravail.js" charset="utf-8" type="text/javascript"></script>
+
+<div id="outline-container-sec-1" class="outline-2">
+<h2 id="sec-1"><span class="section-number-2">1</span> Sujet</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+L'objectif de ce projet est de simuler une économie monétaire
+simplifiée, sans secteur financier, avec une seule banque créant la
+monnaie par le crédit, des entreprises et un nombre fixe de ménages.
+</p>
+
+<p>
+La simulation se déroule par tour.
+</p>
+<ol class="org-ol">
+<li>Un tour commence lorsque les entreprises fixent leurs objectifs de
+production pour le tour. Elles doivent fixer un objectif de masse
+salariale (qui les conduira soit à licencier soit à embaucher par
+rapport au tour précédent) duquel dépend directement la quantité de
+biens produits et elle doivent également fixer un prix unitaire de
+vente de ces biens pour le tour.
+</li>
+<li><b>Marché du travail.</b> Les entreprises ayant des offres d'emploi
+embauchent parmi les ménages inactifs. Ceci détermine la masse
+salariale réelle des entreprises pour le tour et donc les
+salaires à verser.
+</li>
+<li>Les entreprises versent les salaires à leurs salariés. Au besoin
+les entreprises empruntent à la banque le montant nécessaire.
+</li>
+<li>Grâce au travail des salariés, les entreprises produisent les
+biens et constituent leurs stocks.
+</li>
+<li><b>Marché des biens</b>. Les ménages, avec l'argent des salaires,
+achètent et consomment les biens proposés par les entreprises.
+</li>
+<li>Les entreprises remboursent (partiellement) leurs crédits.
+</li>
+<li>Les entreprises qui ont trop de difficultés à rembourser leurs
+crédits font faillite. Leurs pertes sont essuyées par la banque qui
+peut à son tour faire faillite, si ses fonds propres ne couvrent pas
+les pertes à essuyer.
+</li>
+</ol>
+
+<p>
+Tant que la banque ne fait pas faillite la simulation continue.
+</p>
+
+<p>
+Dans un premier temps la simulation doit être la plus simple possible,
+beaucoup de simplifications sont donc introduites. Un objectif
+raisonnable est de créer des simulations qui durent au moins une
+cinquantaine de tours. On affichera dans la console les faillites des
+entreprises avec l'effectif salarial au moment de la faillite, ainsi
+que l'encours total de crédit (la masse monétaire) et les fonds
+propres de la banque à chaque tour. Une fois cette première étape
+accomplie vous êtes encouragés à créer de nouveaux affichages pour
+suivre l'évolution de l'économie.
+</p>
+
+<p>
+Il n'y aura aucune interaction à gérer avec l'utilisateur du
+programme, une fois la simulation lancée elle se déroule jusqu'à la fin.
+</p>
+
+<p>
+Le sujet pourra être traité par binôme ou trinôme (il sera tenu compte
+du nombre de participants au projet).
+</p>
+
+
+<h5>Exemple de simulation (incomplète) </h5>
+<div id="simcomplete">
+</div>
+
+<script type="text/javascript">
+abmanimation({
+div: "#simcomplete", avecbiens: true, avecmonnaie: true, detaillerzero: false, rebouclertourzero: false,  nbmaxtours: 10
+});
+//abmanimation("#simcomplete", true, true, false, false, 10);
+</script>
+</div>
+</div>
+<div id="outline-container-sec-2" class="outline-2">
+<h2 id="sec-2"><span class="section-number-2">2</span> Description plus détaillée de la simulation</h2>
+<div class="outline-text-2" id="text-2">
+</div><div id="outline-container-sec-2-1" class="outline-3">
+<h3 id="sec-2-1"><span class="section-number-3">2.1</span> Les agents</h3>
+<div class="outline-text-3" id="text-2-1">
+<p>
+Il y a trois sortes d'agents. Chacun possède des caractéristiques
+propres. On utilisera des structures pour représenter les
+caractéristiques de chaque agent.
+</p>
+<ol class="org-ol">
+<li>Une seule banque dont la faillite met fin à la simulation. Elle
+note la dette des entreprises et elle crée l'argent en accordant
+des prêts aux entreprises selon un taux qui dépend de la note.
+</li>
+<li>Un nombre fixé de ménages (utiliser un tableau de ménages), chaque
+ménage compte comme un salarié (on confond complètement les deux
+notions).
+</li>
+<li>Pour simplifier, il y a aussi un nombre fixé d'entreprises organisées
+en tableau. Dès qu'une entreprise fait faillite une nouvelle entreprise la
+remplace au tour suivant.
+</li>
+</ol>
+
+<p>
+Lorsqu'une entreprise fait faillite, les contrats de travail sont
+rompus (sans indemnité). Son stock est perdu. La dette de
+l'entreprise est effacée. C'est la banque qui encaisse la perte sur
+ses fonds propres (abondés par les interêts perçus sur les prêts). Une
+nouvelle entreprise, sans stock, sans salariés, sans capital et sans
+dette est alors introduite à sa place.
+</p>
+</div>
+</div>
+
+<div id="outline-container-sec-2-2" class="outline-3">
+<h3 id="sec-2-2"><span class="section-number-3">2.2</span> Les interactions</h3>
+<div class="outline-text-3" id="text-2-2">
+<p>
+Les interactions entres agents sont résumées dans le tableau suivant.
+</p>
+
+
+<table border="2" cellspacing="0" cellpadding="6" rules="groups" frame="hsides">
+
+
+<colgroup>
+<col  class="left" />
+</colgroup>
+
+<colgroup>
+<col  class="left" />
+
+<col  class="left" />
+
+<col  class="left" />
+</colgroup>
+<thead>
+<tr>
+<th scope="col" class="left">Agent</th>
+<th scope="col" class="left">ménage</th>
+<th scope="col" class="left">entreprise</th>
+<th scope="col" class="left">banque</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="left">banque</td>
+<td class="left">&#xa0;</td>
+<td class="left">attribue une note</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">licencie</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">offre emploi</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">ménage</td>
+<td class="left">&#xa0;</td>
+<td class="left">répond offre emploi</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">embauche</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">emprunte</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">paie salaire</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">ménage</td>
+<td class="left">&#xa0;</td>
+<td class="left">fournit travail</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">propose produit</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">ménage</td>
+<td class="left">&#xa0;</td>
+<td class="left">consomme produit</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">&#xa0;</td>
+<td class="left">fait faillite</td>
+<td class="left">&#xa0;</td>
+</tr>
+
+<tr>
+<td class="left">entreprise</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">rembourse</td>
+</tr>
+
+<tr>
+<td class="left">banque</td>
+<td class="left">&#xa0;</td>
+<td class="left">&#xa0;</td>
+<td class="left">fait faillite</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3" class="outline-3">
+<h3 id="sec-2-3"><span class="section-number-3">2.3</span> Les quantités, les paramètres</h3>
+<div class="outline-text-3" id="text-2-3">
+</div><div id="outline-container-sec-2-3-1" class="outline-4">
+<h4 id="sec-2-3-1"><span class="section-number-4">2.3.1</span> La monnaie</h4>
+<div class="outline-text-4" id="text-2-3-1">
+<p>
+Une seule monnaie.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #F0DFAF; font-weight: bold;">typedef</span> <span style="color: #7CB8BB;">double</span> <span style="color: #7CB8BB;">monnaie</span>;
+</pre>
+</div>
+
+<p>
+La monnaie détenue par chaque agent est normalement conservée à la
+banque, mais pour simplifier chaque agent en conserve
+simplement le compte, de même pour le compte de ses dettes et le
+compte de ses défauts.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-3-2" class="outline-4">
+<h4 id="sec-2-3-2"><span class="section-number-4">2.3.2</span> Le temps</h4>
+<div class="outline-text-4" id="text-2-3-2">
+<p>
+Le temps est représenté par un entier initialement nul, et augmentant
+de un par tour (hebdomadaire, mensuel peu importe la grandeur
+réelle représentée).
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #F0DFAF; font-weight: bold;">typedef</span> <span style="color: #7CB8BB;">unsigned</span> <span style="color: #7CB8BB;">int</span> <span style="color: #7CB8BB;">tour</span>;
+<span style="color: #7CB8BB;">tour</span> <span style="color: #DFAF8F;">temps_global</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-3-3" class="outline-4">
+<h4 id="sec-2-3-3"><span class="section-number-4">2.3.3</span> Les biens, la production, les stocks</h4>
+<div class="outline-text-4" id="text-2-3-3">
+<p>
+Il y a un seul type de bien produit et consommé. C'est un bien
+impérissable, il peut être stocké indéfiniment. Les entreprises n'ont
+pas d'objectif de stock, elles ont juste des invendus. Le prix du bien
+est variable selon les entreprise. Paramètres par entreprise: le prix
+de vente d'un produit et le niveau du stock d'invendus.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #7CB8BB;">monnaie</span> <span style="color: #DFAF8F;">prix_unitaire</span>;
+<span style="color: #7CB8BB;">unsigned</span> <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">stock_invendus</span>;
+</pre>
+</div>
+
+<p>
+La production se fait <i>ex nihilo</i> à l'aide de la seule force de travail.
+La quantité de biens produits dépend uniquement du nombre de salariés,
+de façon linéaire, par multiplication de la masse salariale par un
+coefficient de productivité et arrondi par partie entière inférieure.
+La productivité est le même pour toutes les entreprises et ne
+progresse pas dans le temps.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #7CB8BB;">double</span> <span style="color: #DFAF8F;">productivite</span> = 100.;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-3-4" class="outline-4">
+<h4 id="sec-2-3-4"><span class="section-number-4">2.3.4</span> Travail, qualification, contrat de travail</h4>
+<div class="outline-text-4" id="text-2-3-4">
+<p>
+Il y a une seule qualification de travailleur et un seul contrat de
+travail avec au plus un salaire par ménage. Un seul type de contrat de
+travail à durée illimitée. Un seul montant de salaire. La rupture du
+contrat de travail peut se faire unilatéralement par l'entreprise et
+ne donne lieu à aucune indemnité (pas de démission des salariés).
+Paramètre global: montant du salaire unique.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #7CB8BB;">monnaie</span> <span style="color: #DFAF8F;">salaire_unique</span> = 1000.;
+</pre>
+</div>
+</div>
+</div>
+
+<div id="outline-container-sec-2-3-5" class="outline-4">
+<h4 id="sec-2-3-5"><span class="section-number-4">2.3.5</span> Données des ménages</h4>
+<div class="outline-text-4" id="text-2-3-5">
+<p>
+Pas d'objectif d'épargne pour les ménages. Les ménages ne s'endettent
+pas. Les ménages cherchent à consommer un nombre fixé de produits par
+période. Ce nombre est le même pour tous les ménages.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #7CB8BB;">unsigned</span> <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">demande_par_menage</span> = 90;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-3-6" class="outline-4">
+<h4 id="sec-2-3-6"><span class="section-number-4">2.3.6</span> Données de production des entreprises</h4>
+<div class="outline-text-4" id="text-2-3-6">
+<p>
+Les données de production d'une entreprise sont le nombre de salariés,
+le prix unitaire auquel elle vend ses produits et le niveau de stock
+des invendus.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #7CB8BB;">unsigned</span> <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">nombre_salaries</span>;
+<span style="color: #7CB8BB;">monnaie</span> <span style="color: #DFAF8F;">prix_unitaire</span>;
+<span style="color: #7CB8BB;">unsigned</span> <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">stock_invendus</span>;
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-3-7" class="outline-4">
+<h4 id="sec-2-3-7"><span class="section-number-4">2.3.7</span> Données financières des entreprises</h4>
+<div class="outline-text-4" id="text-2-3-7">
+<p>
+Il n'y a pas de dividendes d'entreprise (ni de banque), et pas de
+détenteur du capital.
+</p>
+
+<p>
+Chaque entreprise a une note attribuée par la banque en fonction
+des défauts de crédit sur les termes passés et le temps écoulé depuis.
+Vous aurez à inventer la méthode de notation et la façon d'en déduire
+un taux de crédit.
+</p>
+
+<p>
+Chaque entreprise a une seule ligne de crédit ouverte auprès de la
+banque et il y a une seule durée de crédit applicable. Chaque crédit
+se fait sur dix tours de temps en dix d'échéances d'un même montant,
+une par tour.
+</p>
+
+<p>
+L'entreprise peut rembourser un montant inférieur à l'échéance sans
+pénalité mais il doit couvrir les intérêts, et le prêt doit être
+intégralement remboursé à terme.
+</p>
+
+<p>
+Le montant dû à l'échéance est calculé de façon à rembourser toute la
+dette en le nombre de tours de temps restants.
+</p>
+
+<p>
+Si l'entreprise ne peut pas rembourser la part que représente les
+intérêts ou si le crédit atteint son terme sans complet remboursement,
+sa note est dégradée. L'entreprise doit alors renégocier un crédit, dans
+le tour suivant ou faire faillite. En cas de nouveau crédit elle doit racheter
+le précédent, sans pénalité, mais au nouveau taux (obtenu à partir de
+la nouvelle note).
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">donn&#233;es financi&#232;res d'une entreprise </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">monnaie</span> <span style="color: #DFAF8F;">solde</span>;       <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">solde du compte </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">monnaie</span> <span style="color: #DFAF8F;">dette</span>;       <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">montant total de la dette </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">double</span> <span style="color: #DFAF8F;">note_pret</span>;    <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">note au moment du pret </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">double</span> <span style="color: #DFAF8F;">note</span>;         <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">note actuelle </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">tour</span> <span style="color: #DFAF8F;">date_terme</span>;     <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">initialis&#233; &#224; temps intial + 10 </span><span style="color: #5F7F5F;">*/</span>
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-3-8" class="outline-4">
+<h4 id="sec-2-3-8"><span class="section-number-4">2.3.8</span> La banque</h4>
+<div class="outline-text-4" id="text-2-3-8">
+<p>
+Pour simplifier, la banque ne conserve quasiment pas de données
+puisque les comptes courants, les dettes des clients, et les notes et
+taux d'intérêts sur les clients sont conservés par les ménages et les
+entreprises.
+</p>
+
+<p>
+Toutefois elle possède des fonds propres abondés par les intérêts
+perçus sur les prêts et d'où les défauts des clients sont décaissés.
+</p>
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #7CB8BB;">monnaie</span> <span style="color: #DFAF8F;">fonds_propres</span>;
+</pre>
+</div>
+<p>
+La banque ne peut pas être débitrice auprès d'elle même. Si ses fonds
+propres deviennent négatifs elle fait faillite et cela met fin à la
+simulation.
+</p>
+
+<p>
+L'encours total de crédit est par définition la somme des dettes des
+entreprises. Il est égal au montant total des prêts accordés depuis le
+début de la simulation moins les remboursements du principal versé
+jusqu'alors, et moins les dettes des entreprises faillitaires. Il est
+encore égal à la somme des soldes des comptes des ménages et des
+entreprises et des fonds propres de la banque.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-4" class="outline-3">
+<h3 id="sec-2-4"><span class="section-number-3">2.4</span> Les relations, les marchés</h3>
+<div class="outline-text-3" id="text-2-4">
+</div><div id="outline-container-sec-2-4-1" class="outline-4">
+<h4 id="sec-2-4-1"><span class="section-number-4">2.4.1</span> La relation de salariat</h4>
+<div class="outline-text-4" id="text-2-4-1">
+<p>
+Chaque ménage actif connaît l'entreprise qui l'emploie et sa date
+d'embauche dans cette entreprise. Réciproquement, chaque entreprise
+connaît la liste de ses employés actuels. Cela pourra être représenté
+explicitement par une liste chaînée d'employés (les entiers qui sont leurs
+indices dans le tableau des ménages), ou alors on pourra déduire les
+employés de l'entreprise en parcourant le tableau des ménages.
+</p>
+</div>
+</div>
+<div id="outline-container-sec-2-4-2" class="outline-4">
+<h4 id="sec-2-4-2"><span class="section-number-4">2.4.2</span> le marché du travail</h4>
+<div class="outline-text-4" id="text-2-4-2">
+<p>
+Le marché du travail met en relation les ménages au chômage avec les
+entreprises. Les ménages occupant un emploi sont exclus de ce marché.
+On suppose qu'ils ne cherchent pas un nouvel emploi, le salaire et le
+travail étant le même partout.
+</p>
+
+<p>
+Les entreprises déterminent leur objectif de masse salariale à chaque
+tour. Selon le niveau actuel et l'objectif à atteindre elles
+licencient et remettent ainsi les ménages sur le marché du travail ou
+bien elles font des offres d'emploi auxquelles les ménages répondent,
+puis donnent suite ou non par une embauche effective. On suppose qu'il
+n'y pas de chômage volontaire de la part des ménages.
+</p>
+
+<p>
+Pour simuler le marché du travail, tant que le salaire est unique, on
+ne représente que les étapes suivantes.
+</p>
+<ol class="org-ol">
+<li>Les entreprises qui veulent diminuer leur masse salariale
+licencient (elles pourront par exemple licencier les derniers embauchés).
+</li>
+<li>Puis les entreprises qui veulent augmenter leur masse salariale
+déclarent leurs besoins en affichant leur nombre d'offres de
+travail sur le marché.
+</li>
+<li>Tant qu'il y a des ménages disponibles sur le marché, les
+embauchent se font une à une, en mettant en relation au hasard une
+offre d'emploi et un ménage au chômage, jusqu'à ce que cela ne soit
+plus possible. S'il y a plus d'offres que de ménages disponibles,
+il reste des offres non pourvues, ou au contraire s'il y a moins
+d'offre que de ménages en recherche d'emploi il restera des ménages
+au chômage. Dans un cas il suffit de choisir au hasard les offres
+qui ne seront pas pourvues et dans l'autre cas il suffit de choisir
+au hasard quels ménages resteront au chômage. Une fois l'excédent
+d'offre ou de demande ainsi mis de côté, il ne reste plus qu'à
+apparier un même nombre d'offres et de ménages et pour cela il
+suffit de commencer par tirer un ordre aléatoire sur les ménages
+demandeurs et de pourvoir les offres qui doivent l'être entreprise
+par entreprise.
+</li>
+</ol>
+
+
+<h5>Exemple de simulation des premières embauches sur le marché du travail </h5>
+<div id="marchetravail0">
+</div>
+
+<script type="text/javascript">
+abmanimation({
+div: "#marchetravail0", avecbiens: false, avecmonnaie: false, detaillerzero: true, rebouclertourzero: true,  nbmaxtours: 1
+});
+
+</script>
+
+<h5>Exemple de simulation complète du marché du travail </h5>
+<div id="marchetravail">
+</div>
+
+<script type="text/javascript">
+abmanimation({
+div: "#marchetravail", avecbiens: false, avecmonnaie: false, detaillerzero: true, rebouclertourzero: false,  nbmaxtours: 10
+});
+</script>
+</div>
+</div>
+
+
+
+<div id="outline-container-sec-2-4-3" class="outline-4">
+<h4 id="sec-2-4-3"><span class="section-number-4">2.4.3</span> Le marché des biens</h4>
+<div class="outline-text-4" id="text-2-4-3">
+<p>
+Le marché des biens mets en relation la demande de consommation des
+ménages avec l'offre de biens des entreprises. Les entreprises offrent
+tout leur stock sur le marché des biens au prix unitaire qu'elles ont
+décidé.
+</p>
+
+<p>
+Tous les ménages cherchent à consommer un même nombre (fixé
+globalement) de produits par période. On suppose que les ménages
+cherchent toujours à acquérir les biens au meilleur prix et qu'ils
+sont en concurrence pour cela. Si l'objectif de consommation d'un
+ménage est atteint ou si le solde de son compte est trop bas, il cesse
+de consommer.
+</p>
+
+<p>
+On pourra trier les offres des entreprises par ordre croissant de prix
+unitaire et faire consommer les ménages aléatoirement tour à tour en
+commençant par les meilleures offres.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-2-5" class="outline-3">
+<h3 id="sec-2-5"><span class="section-number-3">2.5</span> Les comportements</h3>
+<div class="outline-text-3" id="text-2-5">
+<p>
+Il vous appartient de fixer le comportement des agents de la
+simulation. Ceux-ci ne doivent dépendre que de données simples et
+directement accessibles (la
+rationalité est limitée).
+</p>
+
+<p>
+Le comportement des entreprises consiste en la façon dont elles
+déterminent leurs objectifs de production (masse salariale, prix
+unitaire). Dans un premier temps vous n'utiliserez pour cela que les
+données de production actuelles (masse salariale, stock, prix
+unitaire) et les données financières actuelles (note et niveau de la
+dette, nombre de tours avant le terme) de l'entreprise.
+</p>
+
+<p>
+Le comportement de la banque consiste en la façon de noter les
+entreprises, uniquement en fonction des défauts passés et du niveau de
+dette et de décider d'accorder ou non un prêt et de son taux en
+fonction uniquement de la note.
+</p>
+
+<p>
+Le comportement des ménages sur les marchés des biens et du travail
+est entièrement déterminé et ne nécessite aucun choix.
+</p>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3" class="outline-2">
+<h2 id="sec-3"><span class="section-number-2">3</span> Étapes de réalisation et rendu</h2>
+<div class="outline-text-2" id="text-3">
+</div><div id="outline-container-sec-3-1" class="outline-3">
+<h3 id="sec-3-1"><span class="section-number-3">3.1</span> Première étape : le marché du travail</h3>
+<div class="outline-text-3" id="text-3-1">
+<p>
+Dans une première étape vous réaliserez une simulation uniquement du
+marché du travail avec un tableau de ménages et un tableau
+d'entreprises donnés. Vous testerez ce marché en donnant
+arbitrairement des objectifs de masse salariale pour chaque
+entreprise, sur quelques tours. Vérifiez que les données de la
+simulation sont toutes cohérentes entre elles.
+</p>
+
+<p>
+<b>Rendu : avant le 14 mars</b>, remettre à votre chargé de TD les fichiers
+source du programme permettant de tester votre simulation du marché du
+travail.
+</p>
+
+<div class="org-src-container">
+
+<pre class="src src-C"><span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">/!\ fichier incomplet &#224; titre d'exemple </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">int</span> <span style="color: #93E0E3;">main</span>() {
+  test0();
+  <span style="color: #F0DFAF; font-weight: bold;">return</span> EXIT_SUCCESS;
+}
+
+
+<span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">premier test: structures et fonction d'embauche </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">test0</span>() {
+  ...
+  ... menages[NB_MENAGES]; <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">9 </span><span style="color: #5F7F5F;">*/</span>
+  ... entreprises[NB_ENTREPRISES]; <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">2 </span><span style="color: #5F7F5F;">*/</span>
+  ...
+  <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">fixer les objectifs de production a la main pour tester </span><span style="color: #5F7F5F;">*/</span>
+  entreprises[0].obj = 2;
+  entreprises[1].obj = 5;
+
+  offres = 7;
+  demandes = 9;
+
+  <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">7 embauches, 2 chomeurs restent </span><span style="color: #5F7F5F;">*/</span>
+  embauche(entreprises, menages, 1, 5);
+  embauche(entreprises, menages, 1, 0);
+  embauche(entreprises, menages, 0, 4);
+  embauche(entreprises, menages, 1, 3);
+  embauche(entreprises, menages, 1, 7);
+  embauche(entreprises, menages, 0, 2);
+  embauche(entreprises, menages, 1, 8);
+  <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">1, 6 pas embauch&#233;s </span><span style="color: #5F7F5F;">*/</span>
+}
+
+
+<span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">second test: melanger un tableau, embauches aleatoires </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">test1</span>() {
+  ...
+  <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">tour 0 uniquement </span><span style="color: #5F7F5F;">*/</span>
+  printf(<span style="color: #CC9393;">"/// Tour 0 ///////\n"</span>);
+  embauches(entreprises, menages, global);
+}
+
+<span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">embauches</span>(entreprises, menages, global) {
+
+  <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">construction d'une permutation des indices </span><span style="color: #5F7F5F;">*/</span>
+  <span style="color: #7CB8BB;">int</span> <span style="color: #DFAF8F;">mperm</span>[NBMEN];
+  <span style="color: #F0DFAF; font-weight: bold;">for</span> (i = 0; i &lt; NBMEN; i += 1) {
+    mperm[i] = i;
+  }
+  melanger(mperm, NBMEN);
+
+  ...
+}
+
+<span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">troisieme test: variation des objectifs embauches aleatoires </span><span style="color: #5F7F5F;">*/</span>
+<span style="color: #7CB8BB;">void</span> <span style="color: #93E0E3;">test2</span>() {
+  ...
+  <span style="color: #5F7F5F;">/*  </span><span style="color: #7F9F7F;">tour 0 </span><span style="color: #5F7F5F;">*/</span>
+  ...
+  <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">tour 1 </span><span style="color: #5F7F5F;">*/</span>
+  <span style="color: #5F7F5F;">/* </span><span style="color: #7F9F7F;">fixer les nouveaux objectifs de production a la main pour tester </span><span style="color: #5F7F5F;">*/</span>
+  entreprises[0].objectif = 4;
+  entreprises[1].objectif = 3;
+
+  printf(<span style="color: #CC9393;">"/// Tour %d ///////\n"</span>, tour);
+  licenciements(...);
+  embauches(...);
+}
+</pre>
+</div>
+</div>
+</div>
+<div id="outline-container-sec-3-2" class="outline-3">
+<h3 id="sec-3-2"><span class="section-number-3">3.2</span> Seconde étape : le marché des biens</h3>
+<div class="outline-text-3" id="text-3-2">
+<p>
+Simuler le marché des biens en plaçant manuellement quelques offres
+(prix unitaire et stock) du côté des entreprises et en attribuant des
+soldes différents aux ménages. Vérifier la cohérence sur plusieurs
+simulations.
+</p>
+
+<p>
+<b>Rendu : avant le 21 mars.</b>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-3" class="outline-3">
+<h3 id="sec-3-3"><span class="section-number-3">3.3</span> Troisième étape : le marché du crédit</h3>
+<div class="outline-text-3" id="text-3-3">
+<p>
+Équiper les entreprises d'un comportement de production simple :
+</p>
+<ol class="org-ol">
+<li>Fixer une fois pour toute en début de simulation le nombre de
+salariés et ne plus le changer (sauf faillite).
+</li>
+<li>si le niveau de stock dépasse la demande unitaire des ménages
+multipliée par le nombre de salariés, baisser le prix unitaire
+d'une unité,  autrement l'augmenter d'une unité.
+</li>
+</ol>
+
+<p>
+Équiper la banque d'une fonction de notation simple:
+</p>
+<ol class="org-ol">
+<li>fixer la note initiale à 0 et le taux initial à 1%.
+</li>
+<li>En cas de défaut d'une entreprise baisser sa note de 0.5 et ne
+jamais la remonter.
+</li>
+<li>Fixer le nouveau taux à 1% moins la note (donc le taux sera de 1.5% après un défaut, 2%
+après deux défauts, etc.).
+</li>
+</ol>
+<p>
+Tester la simulation complète avec le marché du crédit.
+</p>
+
+<p>
+Votre simulation complète doit maintenant fonctionner, faire des tests
+avec différents nombres d'entreprises et de ménages (commencer petit,
+par exemple avec deux ou trois entreprises).
+</p>
+
+<p>
+<b>Rendu : avant le 4 avril.</b>
+</p>
+</div>
+</div>
+<div id="outline-container-sec-3-4" class="outline-3">
+<h3 id="sec-3-4"><span class="section-number-3">3.4</span> Quatrième étape : améliorer la simulation</h3>
+<div class="outline-text-3" id="text-3-4">
+<p>
+Améliorer les comportements de votre simulation, notamment le
+comportement des entreprises de façon à rendre le marché du travail
+dynamique.
+</p>
+
+<p>
+<b>Contrôler l'aléa.</b>
+Votre simulation utilise une graine
+aléatoire pour initialiser un générateur de nombres aléatoires,
+afficher cette graine en début de simulation. Puis faire en sorte
+qu'il soit possible de passer en argument à la ligne de commande la
+graine aléatoire, de façon à rejouer à l'identique une dynamique.
+</p>
+
+<p>
+<b>Dépasser le cas simplifié.</b>
+Vous pouvez revenir sur des choix de simplification qui ont été fait
+dans cette simulation pour la rendre un peu plus réaliste. Par exemple
+en rendant le nombre d'entreprises réellement dynamique ou en donnant
+aux ménages un comportement de consommation plus complexe. Dans ce
+cas, vous pouvez rendre une deuxième version de la simulation complète
+dans laquelle vous irez plus loin.
+</p>
+
+<p>
+<b>Rendu final : avant le 28 avril.</b> Vous livrerez, les fichiers sources
+(du C standard dans des fichiers .c et .h) un fichier Makefile et un
+document dans un format ouvert (pdf, odt, etc.) avec vos noms, où vous
+décrirez les parties intéressantes de votre simulation et vos
+commentaires sur la dynamique. En fournissant vos graines aléatoires
+vous permettez normalement à d'autres personnes de revoir exactement
+les mêmes enchaînements d'événements. Vous ne rendrez aucun autre
+type de fichier.
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Auteur: Pierre Boudes</p>
+<p class="date">Created: 2014-03-06 Thu 23:25</p>
+<p class="creator"><a href="http://www.gnu.org/software/emacs/">Emacs</a> 24.3.1 (<a href="http://orgmode.org">Org</a> mode 8.2.5d)</p>
+<p class="validation"><a href="http://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
